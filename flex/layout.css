@@ -1,0 +1,29 @@
+.frame{
+    display:flex;
+}
+
+.right{
+    flex: none;
+    width: 20%;
+    background-color: brown;
+}
+
+.left{
+    flex: none;
+    background-color: aqua;
+}
+
+.horizon{
+    display: flex;
+    flex: auto;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    background-color: rgb(201, 43, 43);
+}
+
+.text{
+    width: 50%;
+    background-color: aqua;
+    text-align: center;
+}
