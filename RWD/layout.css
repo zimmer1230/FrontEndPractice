@@ -1,0 +1,54 @@
+body{
+    align-items: end;
+}
+.headline{
+    font-size: 30px; font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.desktop-menu{
+    display: block;
+    text-align: center;
+}
+.mobile-menu{
+    display: none;
+    text-align: center;
+}
+
+.list{
+    display: flex; 
+    justify-content: center;
+}
+
+.product{
+    width: 280px; margin: 10px;
+    background-color: aqua;
+}
+
+@media (max-width: 1250px){
+    /* 螢幕寬度小於1250px 時，套用以下設定 */
+    .list{
+        flex-wrap: wrap;
+    }
+    .product{
+        width: 45%;
+    }
+}
+
+@media (max-width: 500px){
+    /* 360~500 */
+    .desktop-menu{
+        display: none;
+        text-align: center;
+    }
+    .mobile-menu{
+        display: block;
+        text-align: center;
+    }
+    .product{
+        width: 90%;
+    }
+    .headline{
+        font-size: 20px;
+    }
+}
