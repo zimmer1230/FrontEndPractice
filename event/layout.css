@@ -1,0 +1,20 @@
+.btn{
+    background-color: #ff4545;
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: 1px solid #000000;
+    text-align: center;
+    color: aliceblue;
+    font-size: large;
+    cursor: pointer;
+}
+
+html{
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+
