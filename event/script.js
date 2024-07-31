@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', (event)=>{
     }
 
     function lighten(elem){
+        elem.style.fontWeight='bold';
         console.log("lighten");
         lightness_adjust(elem, 20);
     }
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', (event)=>{
         lightness_adjust(elem, -20);
     }
     function origin(elem){
+        elem.style.fontWeight='normal';
         console.log("origin");
         elem.style.backgroundColor = button_origin_color;
     }
