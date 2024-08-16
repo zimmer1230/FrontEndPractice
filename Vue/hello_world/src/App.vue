@@ -7,6 +7,7 @@
 
 <template>
 
+
 <div v-html="hello_world"></div>
 <div :class="my_class">This is my class</div>
 <div :id="my_id">This is my id</div>
