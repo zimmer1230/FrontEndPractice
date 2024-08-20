@@ -1,16 +1,25 @@
 <script setup>
 import {ref} from "vue";
 
+let state = ref({
+  title: "Reactivity Practice!",
+  className: "default"
+});
+
+function handler(){
+  console.log('clicked!');
+  state.value.title = "You clicked me.";
+  state.value.className = "clicked";
+}
 
 </script>
 
 <template>
-  <main style="background-color: crimson;">
 
-    <button class="circle-button">Push me!</button>
+  <div v-bind:class="state.className">{{ state.title }}</div>
+  <button @click="handler" class="circle-button">Push me!</button>
 
 
-  </main>
 
 </template>
 
@@ -20,11 +29,12 @@ header {
   max-height: 100vh;
 }
 
-main{
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.clicked{
+  font-weight: 700;
+  font-size: 200px;
+  color: red;
 }
+
 
 .circle-button{
   width: 60px;
