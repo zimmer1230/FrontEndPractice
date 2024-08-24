@@ -1,0 +1,1 @@
+fetch( 'https://corsproxy.io/?openapi.twse.com.tw/v1/opendata/t187ap46_L_9' ).then( res=>console.log(res.json()) )
