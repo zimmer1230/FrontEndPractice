@@ -1,14 +1,15 @@
 from flask import Flask
 import random
 
-app=Flask(__name__)
+app=Flask(__name__, static_folder="public", static_url_path="/www")
 
 # 建立網站首頁回應方式
-@app.route("/")
 
-# 回覆內容函式
-def index():    
-    
-    return "Hello flask, you are " + str(random.randrange(0,100)) + " member"
+@app.route("/hello")
+def hello():
+    return "It seems you find my secret!"
 
+@app.route("/user/<username>")
+def handlerUser(username):
+    return "hello! " + username
 app.run()
