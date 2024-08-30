@@ -1,15 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Ping from '../components/Ping.vue'
-
+import Hello from '../components/Hello.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/ping',
-      name: 'ping',
-      component: Ping
-    },
+      path: '/hello',
+      name: 'hello',
+      component: Hello
+    }
   ]
 })
-
 export default router
