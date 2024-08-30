@@ -2,6 +2,9 @@
     <div>
         <p> {{ msg }} </p>
     </div>
+    <div class="container">
+        <button type="button" class="btn  btn-primary"> Click me! </button>
+    </div>
 
 </template>
 
