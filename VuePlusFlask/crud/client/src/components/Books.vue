@@ -8,6 +8,7 @@ export default{
         return {
             activeAddBookModal: false,
             activeEditBookModal: false,
+            activeDeleteModal: false,
             addBookForm: {
                 title: '',
                 author: '',
@@ -19,6 +20,7 @@ export default{
                 author:'',
                 read: []
             },
+            deleteBookID: '',
             books: [],
             message: '',
             showMessage: false
@@ -99,6 +101,19 @@ export default{
                 body.classList.remove('modal-open');
             }
         },
+        toggleDeleteModal(book){
+            if(book){
+                this.deleteBookID = book.id;
+            }
+            const body = document.querySelector('body');
+            this.activeDeleteModal = !this.activeDeleteModal;
+            if(this.activeDeleteModal){
+                body.classList.add('modal-open');
+            }
+            else{
+                body.classList.remove('modal-open');
+            }
+        },
         handleEditSubmit(){
             this.toggleEditBookModal(null);
             let read = false;
@@ -127,8 +142,9 @@ export default{
             this.initForm();
             this.getBooks();
         },
-        handleDeleteBook(book){
-            this.removeBook(book.id);
+        handleDeleteBook(){
+            this.toggleDeleteModal(null);
+            this.removeBook(this.deleteBookID);
         },
         removeBook(bookID){
             const path = `http://localhost:5001/books/${bookID}`;
@@ -180,7 +196,7 @@ export default{
                             <td>
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn btn-warning btn-sm" @click="toggleEditBookModal(book)">Edit</button>
-                                    <button type="button" class="btn btn-danger btn-sm" @click="handleDeleteBook(book)">Delete</button>
+                                    <button type="button" class="btn btn-danger btn-sm" @click="toggleDeleteModal(book)">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -328,5 +344,38 @@ export default{
     </div>
     <div v-if="activeEditBookModal" class="modal-backdrop fade show"></div>
 
+    <!--Handle Delete Modal-->
+    <div
+        ref="deleteModal"
+        class="modal fade"
+        :class="{show: activeDeleteModal, 'd-block':activeDeleteModal}"
+        tabindex="-1"
+        role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Are you sure you want to delete?</h5>
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                        @click="toggleDeleteModal">
+                        <span aria-hidden="true">X</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="btn-group" role="group">
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            @click="handleDeleteBook()">
+                        Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <div v-if="activeDeleteModal" class="modal-backdrop fade show"></div>
 
 </template>

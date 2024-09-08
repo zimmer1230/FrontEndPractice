@@ -4,4 +4,7 @@ const hello = ()=>{
     return msg;
 };
 const brian = {height: '168cm', style: 'roast?', speak: ()=>{console.log('Better than hello');}};
-export default {obj1:hello, obj2:brian};
+let x=5;
+let y=8;
+export default {x, y};
+export {brian};
