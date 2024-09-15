@@ -1,9 +1,9 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import  Books  from './components/Books.vue';
 </script>
 
 <template>
-  <RouterView />
+  <Books></Books>
 </template>
 
 <style scoped>
