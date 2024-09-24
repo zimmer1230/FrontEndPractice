@@ -1,171 +1,214 @@
-import MyAlert from './MyAlert.js';
-export default{
-    data(){
-        return {
-            activeAddBookModal: false,
-            activeEditBookModal: false,
-            activeDeleteModal: false,
-            addBookForm: {
-                title: '',
-                author: '',
-                read: [],
-            },
-            editBookForm:{
-                id: '',
-                title:'',
-                author:'',
-                read: []
-            },
-            deleteBookID: '',
-            books: [],
-            message: '',
-            showMessage: false
-        };
-    },
-    components:{
-        MyAlert: MyAlert
-    },
-    methods: {
-        addBook(payload){
-            const path = 'http://localhost:5001/books';
-            fetch(path, {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            }).then( res=>{
-                this.getBooks();
-                this.message = 'Book Added.';
-                this.showMessage = true;
-            });
+<script setup>
+import Alert from './Alert.vue';
+import { onMounted } from 'vue';
+import { ref } from 'vue';
+const url = 'https://api.sheety.co/447fa712da2772c794eff28e311f666f/booklist/booklist';
 
+let activeAddBookModal = ref(false);
+let activeEditBookModal = false;
+let activeDeleteModal = false;
+let addBookForm = {
+    title: '',
+    author: '',
+    rate: ''
+};
+let editBookForm = {
+    title:'',
+    author:'',
+    rate: '',
+    id: ''
+};
+let deleteBookID = '';
+let books = [];
+let message = '';
+let showMessage = false;
+let timeoutId = '';
+
+function showWait(){
+    message = 'Please wait...';
+    showMessage = true;
+};
+function addBook(payload){
+    showWait();
+    const path = url;
+    let _temp_book = payload.booklist;
+    _temp_book.id = books.length+2;
+    fetch(path, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
         },
-        getBooks(){
-            const path = 'http://localhost:5001/books';
-            fetch(path)
-            .then(res=>res.json())
-            .then( data=>this.books=data.books )
-            .catch(err=>{console.error(err)});
-        },
-        handleAddReset(){
-            this.initForm();
-        },
-        handleAddSubmit(){
-            this.toggleAddBookModal();
-            let read = false;
-            if (this.addBookForm.read[0]){
-                read = true;
-            }
-            const payload = {
-                title: this.addBookForm.title,
-                author: this.addBookForm.author,
-                read
-            };
-            this.addBook(payload);
-            this.initForm();
-        },
-        initForm(){
-            this.addBookForm.title = '';
-            this.addBookForm.author = '';
-            this.addBookForm.read = [];
-            this.editBookForm.id = '';
-            this.editBookForm.title = '';
-            this.editBookForm.author = '';
-            this.editBookForm.read = [];
-        },
-        toggleAddBookModal(){
-            const body = document.querySelector('body');
-            this.activeAddBookModal = !this.activeAddBookModal;
-            if (this.activeAddBookModal){
-                body.classList.add('modal-open');
-            }
+        body: JSON.stringify(payload)
+    }).then( (res)=>{
+        books.push( _temp_book );    //pre-process
+        message = 'Book Added.';
+        showMessage = true;
+        console.log('addBook');
+        console.log(JSON.parse(JSON.stringify(books)));
+        reset_delay_getBooks();
+    });
+};
+function getBooks(){
+    return new Promise( (resolve, reject)=>{
+        console.log('getBooks');
+        const path = url;
+        fetch(path)
+        .then(  res=>{
+            if (res.ok){
+                return res.json();
+            } 
             else{
-                body.classList.remove('modal-open');
+                reject('getBook failed.');
             }
-        },
-        toggleEditBookModal(book){
-            if(book){
-                this.editBookForm = book;
-            }
-            const body = document.querySelector('body');
-            this.activeEditBookModal = !this.activeEditBookModal;
-            if(this.activeEditBookModal){
-                body.classList.add('modal-open');
-            }
-            else{
-                body.classList.remove('modal-open');
-            }
-        },
-        toggleDeleteModal(book){
-            if(book){
-                this.deleteBookID = book.id;
-            }
-            const body = document.querySelector('body');
-            this.activeDeleteModal = !this.activeDeleteModal;
-            if(this.activeDeleteModal){
-                body.classList.add('modal-open');
-            }
-            else{
-                body.classList.remove('modal-open');
-            }
-        },
-        handleEditSubmit(){
-            this.toggleEditBookModal(null);
-            let read = false;
-            if (this.editBookForm.read) read = true;
-            const payload = {
-                title: this.editBookForm.title,
-                author: this.editBookForm.author,
-                read
-            };
-            this.updateBook(payload, this.editBookForm.id);
-        },
-        updateBook(payload, bookID){
-            const path = `http://localhost:5001/books/${bookID}`;
-            fetch(path, {
-                method: 'PUT',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-type': 'application/json'
-                }
-            }).then(res=>{
-                this.getBooks();
-            })
-        },
-        handleEditCancel(){
-            this.toggleEditBookModal(null);
-            this.initForm();
-            this.getBooks();
-        },
-        handleDeleteBook(){
-            this.toggleDeleteModal(null);
-            this.removeBook(this.deleteBookID);
-        },
-        removeBook(bookID){
-            const path = `http://localhost:5001/books/${bookID}`;
-            fetch( path,{
-                method: 'DELETE',
-                headers:{
-                    'Content-type': 'application/json'
-                }
-            } ).then(res=>{
-                this.getBooks();
-                this.message = 'Book removed.'
-                this.showMessage = true;
-            })
+        } )
+        .then( data=>{
+            console.log(data.booklist);
+            books=data.booklist;
+            resolve('Successfully getbook');
+        })
+    })
+};
+function reset_delay_getBooks(){
+    if (!(timeoutId===undefined)){
+        clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout( ()=>{
+        getBooks();
+    }, 30000);
+};
+function handleAddReset(){
+    initForm();
+};
+function handleAddSubmit(){
+    toggleAddBookModal();
+    const payload = {
+        booklist:{
+            title: addBookForm.title,
+            author: addBookForm.author,
+            rate: addBookForm.rate
         }
-    },
-    created(){
-        this.getBooks();
-    },
-    template:`
+    };
+    addBook(payload);
+    initForm();
+};
+function initForm(){
+    addBookForm.title = '';
+    addBookForm.author = '';
+    addBookForm.rate = '';
+    editBookForm.title = '';
+    editBookForm.author = '';
+    editBookForm.rate = '';
+    editBookForm.id = '';
+};
+function toggleAddBookModal(){
+    const body = document.querySelector('body');
+    activeAddBookModal.value = !activeAddBookModal.value;
+    if (activeAddBookModal.value){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function toggleEditBookModal(book){
+    if(book){
+        editBookForm = book;
+    }
+    const body = document.querySelector('body');
+    activeEditBookModal = !activeEditBookModal;
+    if(activeEditBookModal){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function toggleDeleteModal(book){
+    if(book){
+        deleteBookID = book.id;
+    }
+    const body = document.querySelector('body');
+    activeDeleteModal = !activeDeleteModal;
+    if(activeDeleteModal){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function handleEditSubmit(){
+    toggleEditBookModal(null);
+    const payload = {
+        booklist:{
+        title: editBookForm.title,
+        author: editBookForm.author,
+        rate: editBookForm.rate
+        }
+    };
+    updateBook(payload, editBookForm.id);
+};
+function updateBook(payload, bookID){
+    const path = url+`/${bookID}`;
+    message = 'Please wait ...';
+    showMessage = true;
+    fetch(path, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    }).then(res=>{
+        message = 'Book edited';
+        showMessage = true;
+        //pre-update local data because PUT takes a while
+        books[bookID-2] = {...books[bookID-2],  ...payload.booklist};   
+        console.log('updateBook')
+        console.log(JSON.parse(JSON.stringify(books)));
+        reset_delay_getBooks();
+    })
+};
+function handleEditCancel(){
+    toggleEditBookModal(null);
+    initForm();
+    getBooks();
+};
+function handleDeleteBook(){
+    toggleDeleteModal(null);
+    removeBook(deleteBookID);
+};
+function removeBook(bookID){
+    showWait();
+    const path = url+`/${bookID}`;
+    fetch( path,{
+        method: 'DELETE'
+    } ).then(res=>{
+        message = 'Book removed.'
+        showMessage = true;
+        let deleted_index = bookID - 2;
+        //pre-update local data because DELETE take a while
+        for( let i = deleted_index + 1; i < books.length; i++ ){
+            books[i].id = Number(books[i].id) - 1;
+        }
+        books.splice( deleted_index, 1 ); 
+        console.log('removeBook');
+        console.log(JSON.parse(JSON.stringify(books)));
+        reset_delay_getBooks();
+    })
+};
+
+onMounted( ()=>{
+    getBooks();
+} )
+
+</script>
+
+<template>
     <div class="container">
         <div class="row">
             <div class="col-sm-10">
                 <h1>Books</h1>
                 <hr><br><br>
-                <MyAlert :message="message" v-if="showMessage"></MyAlert>
+                <Alert :message="message" v-if="showMessage"></Alert>
                 <button type="button" class="btn btn-success btn-sm" @click="toggleAddBookModal">Add Books</button>
                 <br><br>
                 <table class="table table-hover">
@@ -173,17 +216,14 @@ export default{
                         <tr>
                             <th scope="col">Title</th>
                             <th scope="col">Author</th>
-                            <th scope="col">Read?</th>
+                            <th scope="col">Rate</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(book, index) in books" :key="index">
                             <td>{{ book.title }}</td>
                             <td>{{ book.author }}</td>
-                            <td>
-                                <span v-if="book.read">Yes</span>
-                                <span v-else>No</span>
-                            </td>
+                            <td>{{ book.rate }}</td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn btn-warning btn-sm" @click="toggleEditBookModal(book)">Edit</button>
@@ -238,13 +278,14 @@ export default{
                                 v-model="addBookForm.author"
                                 placeholder="Enter author">
                         </div>
-                        <div class="mb-3 form-check">
+                        <div class="mb-3">
+                            <label class="form-label" for="addBookRate">Rate:</label>
                             <input
-                                    type="checkbox"
-                                    class="form-check-input"
-                                    id="addBookRead"
-                                    v-model="addBookForm.read">
-                            <label class="form-check-label" for="addBookRead">Read?</label>
+                                    type="text"
+                                    class="form-control"
+                                    id="addBookRate"
+                                    v-model="addBookForm.rate"
+                                    placeholder="Enter rate from 0.0 ~ 5.0">
                         </div>                  
                         <div class="btn-group" role="group">
                             <button
@@ -307,13 +348,14 @@ export default{
                                 v-model="editBookForm.author"
                                 placeholder="Enter author">
                         </div>
-                        <div class="mb-3 form-check">
+                        <div class="mb-3">
+                            <label class="form-label"  for="editBookRate">Rate:</label>
                             <input 
-                                type="checkbox"
-                                class="form-check-input"
-                                id="editBookRead"
-                                v-model="editBookForm.read">
-                            <label class="form-check-label"  for="editBookRead">Read?</label>
+                                type="text"
+                                class="form-control"
+                                id="editBookRate"
+                                v-model="editBookForm.rate"
+                                placeholder="Enter rate ranged from 0.0 ~ 5.0">
                         </div>
                         <div class="btn-group" role="group">
                             <button
@@ -367,6 +409,6 @@ export default{
             </div>
         </div>
     </div>    
-    <div v-if="activeDeleteModal" class="modal-backdrop fade show"></div>    
-    `
-};
+    <div v-if="activeDeleteModal" class="modal-backdrop fade show"></div>
+
+</template>

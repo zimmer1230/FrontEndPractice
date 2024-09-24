@@ -1,13 +1,17 @@
 <script setup>
+import Vuelidate from './components/Vuelidate.vue';
+import BaseInput from './components/BaseInput.vue';
 import {ref} from 'vue';
 
-let arr = ref([1,2,3]);
-console.log( arr.value[0] );
+const firstName = ref("");
+
+
 </script>
 
 <template>
 
-  <p>{{ arr }}</p>
+  <BaseInput v-model="firstName"></BaseInput>
+  <p> {{ firstName }} </p>
 
 </template>
 

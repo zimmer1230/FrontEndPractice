@@ -1,215 +1,267 @@
-<script>
-
+<script setup>
 import Alert from './Alert.vue';
+import { onMounted } from 'vue';
+import { ref } from 'vue';
 const url = 'https://api.sheety.co/447fa712da2772c794eff28e311f666f/booklist/booklist';
 
-export default{
-    data(){
-        return {
-            activeAddBookModal: false,
-            activeEditBookModal: false,
-            activeDeleteModal: false,
-            addBookForm: {
-                title: '',
-                author: '',
-                rate: ''
-            },
-            editBookForm:{
-                title:'',
-                author:'',
-                rate: '',
-                id: ''
-            },
-            deleteBookID: '',
-            books: [],
-            message: '',
-            showMessage: false,
-            timeoutId: ''
-        };
-    },
-    components:{
-        Alert: Alert
-    },
-    methods: {
-        showWait(){
-            this.message = 'Please wait...';
-            this.showMessage = true;
+let activeAddBookModal = ref(ref(false));
+let activeEditBookModal = ref(false);
+let activeDeleteModal = ref(false);
+let addBookForm = ref({
+    title: '',
+    author: '',
+    rate: ''
+});
+let editBookForm = ref({
+    title:'',
+    author:'',
+    rate: '',
+    id: ''
+});
+let deleteBookID = ref('');
+let books = ref([]);
+let message = ref('');
+let messageType = ref('');
+let showMessage = ref(false);
+let timeoutId = ref('');
+
+function showWait(){
+    message.value = 'Please wait...';
+    showMessage.value = true;
+    messageType.value = 'alert alert-secondary';
+};
+function addBook(payload){
+    showWait();
+    const path = url;
+    let _temp_book = ref(payload.booklist);
+    _temp_book.value.id = books.value.length+2;
+
+    fetch(path,{
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
         },
-        addBook(payload){
-            this.showWait();
-            const path = url;
-            let _temp_book = payload.booklist;
-            _temp_book.id = this.books.length+2;
-            fetch(path, {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            }).then( (res)=>{
-                this.books.push( _temp_book );    //pre-process
-                this.message = 'Book Added.';
-                this.showMessage = true;
-                console.log('addBook');
-                console.log(JSON.parse(JSON.stringify(this.books)));
-                this.reset_delay_getBooks();
-            });
-        },
-        getBooks(){
+        body: JSON.stringify(payload)
+        })
+        .then((res)=>{
             return new Promise( (resolve, reject)=>{
-                console.log('getBooks');
-                const path = url;
-                fetch(path)
-                .then(  res=>{
-                    if (res.ok){
-                        return res.json();
-                    } 
-                    else{
-                        reject('getBook failed.');
-                    }
-                } )
-                .then( data=>{
-                    console.log(data.booklist);
-                    this.books=data.booklist;
-                    resolve('Successfully getbook');
-                })
-            })
-        },
-        reset_delay_getBooks(){
-            if (!(this.timeoutId===undefined)){
-                clearTimeout(this.timeoutId);
-            }
-            this.timeoutId = setTimeout( ()=>{
-                this.getBooks();
-            }, 30000);
-        },
-        handleAddReset(){
-            this.initForm();
-        },
-        handleAddSubmit(){
-            this.toggleAddBookModal();
-            const payload = {
-                booklist:{
-                    title: this.addBookForm.title,
-                    author: this.addBookForm.author,
-                    rate: this.addBookForm.rate
+                if (res.ok){
+                    books.value.push( _temp_book.value );    //pre-process
+                    console.log(JSON.parse(JSON.stringify(books.value)));
+                    getBooks(30000)                         // getBooks after 30s
+                    resolve('AddBook() fulfilled');
                 }
-            };
-            this.addBook(payload);
-            this.initForm();
-        },
-        initForm(){
-            this.addBookForm.title = '';
-            this.addBookForm.author = '';
-            this.addBookForm.rate = '';
-            this.editBookForm.title = '';
-            this.editBookForm.author = '';
-            this.editBookForm.rate = '';
-            this.editBookForm.id = '';
-        },
-        toggleAddBookModal(){
-            const body = document.querySelector('body');
-            this.activeAddBookModal = !this.activeAddBookModal;
-            if (this.activeAddBookModal){
-                body.classList.add('modal-open');
-            }
-            else{
-                body.classList.remove('modal-open');
-            }
-        },
-        toggleEditBookModal(book){
-            if(book){
-                this.editBookForm = book;
-            }
-            const body = document.querySelector('body');
-            this.activeEditBookModal = !this.activeEditBookModal;
-            if(this.activeEditBookModal){
-                body.classList.add('modal-open');
-            }
-            else{
-                body.classList.remove('modal-open');
-            }
-        },
-        toggleDeleteModal(book){
-            if(book){
-                this.deleteBookID = book.id;
-            }
-            const body = document.querySelector('body');
-            this.activeDeleteModal = !this.activeDeleteModal;
-            if(this.activeDeleteModal){
-                body.classList.add('modal-open');
-            }
-            else{
-                body.classList.remove('modal-open');
-            }
-        },
-        handleEditSubmit(){
-            this.toggleEditBookModal(null);
-            const payload = {
-                booklist:{
-                title: this.editBookForm.title,
-                author: this.editBookForm.author,
-                rate: this.editBookForm.rate
+                else{
+                    reject('Failed to add book. ' + res.status + ' Error.');
                 }
-            };
-            this.updateBook(payload, this.editBookForm.id);
-        },
-        updateBook(payload, bookID){
-            const path = url+`/${bookID}`;
-            this.message = 'Please wait ...';
-            this.showMessage = true;
-            fetch(path, {
-                method: 'PUT',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-type': 'application/json'
-                }
-            }).then(res=>{
-                this.message = 'Book edited';
-                this.showMessage = true;
-                //pre-update local data because PUT takes a while
-                this.books[bookID-2] = {...this.books[bookID-2],  ...payload.booklist};   
-                console.log('updateBook')
-                console.log(JSON.parse(JSON.stringify(this.books)));
-                this.reset_delay_getBooks();
-            })
-        },
-        handleEditCancel(){
-            this.toggleEditBookModal(null);
-            this.initForm();
-            this.getBooks();
-        },
-        handleDeleteBook(){
-            this.toggleDeleteModal(null);
-            this.removeBook(this.deleteBookID);
-        },
-        removeBook(bookID){
-            this.showWait();
-            const path = url+`/${bookID}`;
-            fetch( path,{
-                method: 'DELETE'
-            } ).then(res=>{
-                this.message = 'Book removed.'
-                this.showMessage = true;
-                let deleted_index = bookID - 2;
-                //pre-update local data because DELETE take a while
-                for( let i = deleted_index + 1; i < this.books.length; i++ ){
-                    this.books[i].id = Number(this.books[i].id) - 1;
-                }
-                this.books.splice( deleted_index, 1 ); 
-                console.log('removeBook');
-                console.log(JSON.parse(JSON.stringify(this.books)));
-                this.reset_delay_getBooks();
-            })
-        }
-    },
-    created(){
-        this.getBooks();
+            });
+        })
+        .then( res=>{
+            console.log(res);
+            message.value = 'Succeed to add book';
+            showMessage.value = true;
+            messageType.value = 'alert alert-success';
+        })
+        .catch( (rej)=>{
+            message.value = rej;
+            showMessage.value = true;
+            messageType.value = 'alert alert-danger';
+        } );  
+};
+function getBooks(delay=0){
+    showWait();
+    if (!(timeoutId.value===undefined)){
+        clearTimeout(timeoutId.value);
     }
+
+    const path = url;
+    timeoutId.value = setTimeout( ()=>{
+        fetch(path)
+            .then( res=>{
+                return new Promise( (resolve, reject)=>{
+                    if (res.ok){
+                        resolve( res.json() );
+                    }
+                    else{
+                        reject('Failed to get books. '+res.status+' Error.');
+                    }
+                });
+            })
+            .then( data=>{
+                console.log('getBooks fulfilled.');
+                console.log(data.booklist);
+                books.value=data.booklist;
+                message.value = '';
+                showMessage.value = false;
+            })
+            .catch( rej=>{
+                message.value = rej;
+                showMessage.value = true;
+                messageType.value = 'alert alert-danger';
+            });
+    }, delay );
+
 };
 
-</script>
+function handleAddReset(){
+    initForm();
+};
+function handleAddSubmit(){
+    toggleAddBookModal();
+    const payload = {
+        booklist:{
+            title: addBookForm.value.title,
+            author: addBookForm.value.author,
+            rate: addBookForm.value.rate
+        }
+    };
+    addBook(payload);
+    initForm();
+};
+function initForm(){
+    addBookForm.value.title = '';
+    addBookForm.value.author = '';
+    addBookForm.value.rate = '';
+    editBookForm.value.title = '';
+    editBookForm.value.author = '';
+    editBookForm.value.rate = '';
+    editBookForm.value.id = '';
+};
+function toggleAddBookModal(){
+    const body = document.querySelector('body');
+    activeAddBookModal.value = !activeAddBookModal.value;
+    if (activeAddBookModal.value){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function toggleEditBookModal(book){
+    if(book){
+        editBookForm.value = book;
+    }
+    const body = document.querySelector('body');
+    activeEditBookModal.value = !activeEditBookModal.value;
+    if(activeEditBookModal.value){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function toggleDeleteModal(book){
+    if(book){
+        deleteBookID.value = book.id;
+    }
+    const body = document.querySelector('body');
+    activeDeleteModal.value = !activeDeleteModal.value;
+    if(activeDeleteModal.value){
+        body.classList.add('modal-open');
+    }
+    else{
+        body.classList.remove('modal-open');
+    }
+};
+function handleEditSubmit(){
+    toggleEditBookModal(null);
+    const payload = {
+        booklist:{
+        title: editBookForm.value.title,
+        author: editBookForm.value.author,
+        rate: editBookForm.value.rate
+        }
+    };
+    updateBook(payload, editBookForm.value.id);
+};
+function updateBook(payload, bookID){
+    const path = url+`/${bookID}`;
+    showWait();
+    fetch(path, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+        .then( res=>{
+            return new Promise( (resolve, reject)=>{
+                if (res.ok){
+                    //pre-update local data because PUT takes a while
+                    books.value[bookID-2] = {...books.value[bookID-2],  ...payload.booklist};   
+                    console.log('updateBook')
+                    console.log(JSON.parse(JSON.stringify(books.value)));
+                    getBooks(30000);
+                    resolve('Succeed to edit the book');
+                }
+                else{
+                reject( 'Failed to edit book. '+ res.status + 'Error.' );
+                }            
+            })
+        })
+        .then( res=>{
+            message.value = res;
+            showMessage.value = true;
+            messageType.value = 'alert alert-success';
+        })
+        .catch(rej=>{
+            message.value = rej;
+            showMessage.value = true;
+            messageType.value = 'alert alert-warning';
+    })
+};
+function handleEditCancel(){
+    toggleEditBookModal(null);
+    initForm();
+    getBooks();
+};
+function handleDeleteBook(){
+    toggleDeleteModal(null);
+    removeBook(deleteBookID.value);
+};
+function removeBook(bookID){
+    showWait();
+    const path = url+`/${bookID}`;
+    fetch( path,{
+        method: 'DELETE'
+    })
+    .then(res=>{
+        return new Promise( (resolve, reject)=>{
+            if (res.ok){
+                let deleted_index = bookID - 2;
+                //pre-update local data because DELETE take a while
+                for( let i = deleted_index + 1; i < books.value.length; i++ ){
+                    console.log('books.value.length is' + books.value.length + ' now');
+                    books.value[i].id = Number(books.value[i].id) - 1;
+                }
+                books.value.splice( deleted_index, 1 ); 
+                console.log(JSON.parse(JSON.stringify(books.value)));
+                getBooks(30000);    
+                resolve('removeBook() fulfilled.');
+            }
+            else{
+                reject('Failed to delete the book. ' + res.status + 'Error.');
+            }
+        })
+    })
+    .then(res=>{
+        console.log(res);
+        message.value = 'Succeed to delete th book.';
+        showMessage.value = true;
+        messageType.value = 'alert alert-success';
+    })
+    .catch(rej=>{
+        message.value = rej;
+        showMessage = true;
+        messageType.value = 'alert alert-danger';
+    })
+};
 
+onMounted( ()=>{
+    getBooks();
+} )
+
+</script>
 
 <template>
     <div class="container">
@@ -217,7 +269,7 @@ export default{
             <div class="col-sm-10">
                 <h1>Books</h1>
                 <hr><br><br>
-                <Alert :message="message" v-if="showMessage"></Alert>
+                <Alert :message="message" :type="messageType" v-if="showMessage"></Alert>
                 <button type="button" class="btn btn-success btn-sm" @click="toggleAddBookModal">Add Books</button>
                 <br><br>
                 <table class="table table-hover">

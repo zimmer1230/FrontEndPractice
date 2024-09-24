@@ -36,7 +36,10 @@ function getData(){
     params.block_number = document.getElementById('block_number').value;
     url.search = new URLSearchParams(params).toString();
     fetch(url, options)
-    .then((response) => response.json())
+    .then((response) =>{
+        console.log(response);
+        return response.json();
+    })
     .then((json) => {
         let metadata = json.Data.METADATA;
         /*document.getElementById('metadata').innerHTML = JSON.stringify(metadata);*/
