@@ -4,7 +4,7 @@
 <template>
   <div id="self-intro">
     <img class="circle-img"  src="../assets/portrait.jpg" alt="">
-    <div>
+    <div class="text-container">
       <h1>Hello</h1>
       <h2>About me</h2>
       <p>I'm a junior front-end developer. I enjoy designing website like this one.<br>
@@ -38,6 +38,7 @@
     background-color: #F3F3F3;
     justify-content: center;
     align-items: center;
+    padding-top: 0.1px;
   }
   #timeline{
     display: flex;
@@ -51,6 +52,9 @@
     height: 480px; /* Define the height */
     border-radius: 50%; /* Make the image circular */
     margin: 100px;
+  }
+  .text-container{
+    padding: 0 10px;
   }
   .description{
     margin: 100px;
@@ -75,7 +79,7 @@
     }
     .circle-img{
       display: block;
-      margin: 59px auto;
+      margin: 80px auto;
     }
 
   }
