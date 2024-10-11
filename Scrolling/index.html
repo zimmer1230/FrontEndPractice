@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smooth Scroll Animation</title>
+  <style>
+    /* General container styling */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      scroll-behavior: smooth; /* For smooth scrolling */
+    }
+
+    /* Container A and B, both take minimum full screen height (100vh) */
+    .container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center; /* Horizontally center the content */
+      padding: 20px;
+    }
+
+    /* Specific styles for container A and B */
+    .container-a {
+      background-color: #3498db;
+    }
+
+    .container-b {
+      background-color: #e74c3c;
+      position: relative; /* To allow absolute positioning of the title */
+    }
+
+    /* Title B inside container B */
+    .title-b {
+      font-size: 2rem;
+      color: white;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%); /* Center horizontally */
+      transition: top 0.1s ease-out; /* Smooth transition for the position */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Container A -->
+  <div class="container container-a">
+    <p>Content A</p>
+  </div>
+
+  <!-- Container B -->
+  <div class="container container-b">
+    <h1 class="title-b" id="titleB">Title B</h1>
+  </div>
+
+  <script>
+    // JavaScript to animate the title B position smoothly
+    window.addEventListener('scroll', function() {
+      const containerB = document.querySelector('.container-b');
+      const titleB = document.getElementById('titleB');
+      const containerBPosition = containerB.getBoundingClientRect().top;
+      const windowHeight = window.innerHeight;
+
+      // Calculate the scroll percentage relative to container B
+      const scrollProgress = Math.min(Math.max((windowHeight - containerBPosition) / windowHeight, 0), 1);
+
+      // Smoothly adjust the title's vertical position
+      // When `scrollProgress` is 0, the title is at the top, and when it is 1, the title is centered
+      const startOffset = 20;  // Start 20px from the top of container B
+      const centerOffset = (containerB.offsetHeight / 2) - (titleB.offsetHeight / 2);  // Calculate the center position
+      const topPosition = startOffset + (centerOffset - startOffset) * scrollProgress;
+
+      titleB.style.top = `${topPosition}px`; // Apply the calculated position
+    });
+  </script>
+
+</body>
+</html>
