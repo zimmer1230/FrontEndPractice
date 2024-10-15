@@ -41,7 +41,7 @@ defineProps({
             >
                 <div class="accordion-body">
                     <ul v-for="(item, index) in content" :key="index">
-                        <li class="">
+                        <li class="fw-bold">
                             {{ item }}
                         </li>
                     </ul>

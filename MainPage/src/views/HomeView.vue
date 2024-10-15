@@ -2,10 +2,11 @@
   import Accordion from '@/components/Accordion.vue';
   import Footer from '@/components/Footer.vue';
 
-  const MyCollegeDeg = ['資訊工程學系 學士','金融科技學程'];
-  const MyHighschoolDeg = ['普通科 自然組畢業'];
+  const MyCollegeDeg = ['資訊工程學系 學士','金融科技學程 修畢'];
+  const MyHighschoolDeg = ['普通科 自然組 畢業'];
   const MyClub = ['校園網路策進會 副會長','校園網路策進會 活動部長','鋼琴社 社長', '喜劇社 副社長'];
-  const MyJob = ['資訊處 宿網網管', '課外活動組 靜態網頁撰寫接案'];
+  const MyJob = ['課外活動組 靜態網頁撰寫','資訊處 宿網網管'];
+  const MyCompetition = ['2023 全國大專院校智慧創新暨跨領域整合創新競賽 數位永續科技組 值得注目獎 (決賽入圍)', '110學年度 中正大學校內程式競賽 佳作']
 
   const MyFrontEndSkills = [
     {skill: 'HTML', style: 'text-bg-secondary'},
@@ -21,6 +22,7 @@
   ];
   const MyLanguageSkills = [
     {skill: 'English', style: 'text-bg-warning'},
+    {skill: '中文', style:'text-bg-primary'},
     {skill: '台語', style: 'text-bg-secondary'}  
   ];
 
@@ -57,10 +59,12 @@
 
     <div class="col-lg-6 col-sm-12 d-flex">
       <div class="container">
-        <h1 class="fw-bold d-none d-lg-block col display-1">Hello</h1>
-        <p class="fw-semibold lead">About me</p>
-        <p>I'm a junior front-end developer. I enjoy designing website like this one.<br>
-        If you are interested in my portfolio, please click the button "Portfolio" above.
+        <h1 class="fw-bold d-none d-lg-block col display-1">陳 義鏵</h1>
+        <p class="fw-semibold lead">
+          <span class="d-lg-none">陳義鏵 </span>
+          前端工程師</p>
+        <p>應屆畢業生，希望能夠找到一同激發創意、創造酷東西的工作夥伴們。<br>
+          
         </p>
       </div>
     </div>
@@ -70,7 +74,7 @@
   <!-- timeline -->
   <div class="row justify-content-center" id="timeline">
     <!-- Education -->
-    <div class="col-lg-5 col-sm-12 p-5" id="education">
+    <div class="col-lg-5 col-12 p-5" id="education">
       <span class="d-flex justify-content-center">
         <img src="../assets/educate.png" alt="" style="max-width: 60px;">
       </span>
@@ -85,8 +89,10 @@
         <img src="../assets/experience.png" alt="" style="max-width: 60px;">
       </span>
       <h2 class="text-center mb-5">Experience</h2>
-      <Accordion title="社團活動經歷" :content="MyClub" id="CLUB"></Accordion>
-      <Accordion title="校內工讀經歷" :content="MyJob" id="JOB"></Accordion>
+      <Accordion title="社團活動" :content="MyClub" id="CLUB"></Accordion>
+      <Accordion title="校內工讀" :content="MyJob" id="JOB"></Accordion>
+      <Accordion title="競賽" :content="MyCompetition" id="COMPETITION"></Accordion>
+
     </div>
 
   </div>
@@ -110,9 +116,10 @@
           </p>
         </div>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item">能使用 <span class="badge text-bg-warning">Javascript</span> Ajax 串接API，開發簡單前端 CRUD APP。</li>
+            <li class="list-group-item">能使用 <span class="badge text-bg-warning">Javascript</span> 串接後端API，完成 CRUD。</li>
             <li class="list-group-item">能根據需求調整 <span class="badge bg-primary">CSS</span> <span class="badge bg-primary">Bootstraps</span> 外觀。 </li>
             <li class="list-group-item">能使用 <span class="badge bg-success">Vue3</span> 撰寫元件，並開發SPA(Single Page Application)。 </li>
+            <li class="list-group-item">能利用 <span class="badge bg-primary">Bootstraps</span> 進行響應式(RWD)網頁設計。</li>
           </ul>
       </div>
 
@@ -122,7 +129,7 @@
 
       <div class="card my-5 p-2">
         <div class="card-body">
-          <h4 class="card-title">程式語言</h4>
+          <h4 class="card-title">其他程式開發經驗</h4>
           <p class="card-text">
             <span class="badge me-1" :class="skill.style"  v-for="(skill, idx) in MyProgrammingSkills" :key="idx">{{ skill.skill }}</span>
           </p>
@@ -136,14 +143,15 @@
 
       <div class="card my-5 p-2">
         <div class="card-body">
-          <h4 class="card-title">語言</h4>
+          <h4 class="card-title">語言技能</h4>
           <p class="card-text">
             <span class="badge me-1" :class="skill.style"  v-for="(skill, idx) in MyLanguageSkills" :key="idx">{{ skill.skill }}</span>
           </p>
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">TOEIC 805分</li>
-          <li class="list-group-item">能使用台語進行日常對話。</li>
+          <li class="list-group-item"><span class="badge text-bg-warning">English</span>  TOEIC 655 scores.</li>
+          <li class="list-group-item">能使用 <span class="badge text-bg-primary">中文</span> 進行流暢溝通、進行簡報。</li>
+          <li class="list-group-item">能使用 <span class="badge text-bg-secondary">台語</span> 進行日常對話。</li>
         </ul>
       </div>
     </div>
