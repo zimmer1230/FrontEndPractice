@@ -1,11 +1,17 @@
 <script setup>
-let activePage = window.location.pathname;
+import { ref } from 'vue';
+const activePage = ref(window.location.hash);
+
+window.addEventListener('hashchange', ()=>{
+    activePage.value = window.location.hash;
+})
+
 function disappear(event){
     event.target.classList.add('d-none');
 };
 
 function annoying(event){
-    if (activePage === '/'){
+    if (activePage.value === '#/'){
         event.target.classList.add('annoying');
         document.getElementById('invisible-dog').classList.remove('d-none');
     }
@@ -34,17 +40,17 @@ function annoying(event){
         <div class="collapse navbar-collapse" id="collapsibleNavId">
           <ul class="navbar-nav me-auto mt-2 mt-lg-0 ">
             <li class="nav-item">
-              <a class="nav-link" href="/" :class="activePage==='/'?'active':''"  :aria-current="activePage==='/'?'page':''"
+              <a class="nav-link" href="#/" :class="activePage==='#/'?'active':''"  :aria-current="activePage==='#/'?'page':''"
                 >Home
                 <span class="visually-hidden">(current)</span></a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/portfolio" :class="activePage==='/portfolio'?'active':''"  :aria-current="activePage==='/portfolio'?'page':''"
+              <a class="nav-link" href="#portfolio" :class="activePage==='#/portfolio'?'active':''"  :aria-current="activePage==='#/portfolio'?'page':''"
                 >Portfolio</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/contact" :class="activePage==='/contact'?'active':''"  :aria-current="activePage==='/contact'?'page':''"
+              <a class="nav-link" href="#contact" :class="activePage==='#/contact'?'active':''"  :aria-current="activePage==='#/contact'?'page':''"
                 >Contact</a>
             </li>
 
@@ -77,7 +83,7 @@ function annoying(event){
             transform: translate(50vw, 40vh) scale(7);
         }
         100%{
-            transform: translate(100vw, 100vh) scale(7);
+            transform: translate(120vw, 120vh) scale(7);
         }
 
     }

@@ -1,13 +1,33 @@
 <script setup>
-import { RouterView } from 'vue-router';
+import { ref, computed } from 'vue'
+
 import Header from './components/Header.vue';
+import HomeView from './views/HomeView.vue'
+import PortfolioView from './views/PortfolioView.vue'
+import ContactView from './views/ContactView.vue'
+
+const routes = {
+  '/': HomeView,
+  '/portfolio': PortfolioView,
+  '/contact': ContactView
+};
+
+const currentPath = ref(window.location.hash);
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash
+})
+const currentView = computed(() => {
+  return routes[currentPath.value.slice(1) || '/'] || NotFound
+})
+
+
 </script>
 
 
 
 <template>
   <Header></Header>
-  <RouterView></RouterView>
+  <component :is="currentView"></component>
 </template>
 
 <style scoped>
