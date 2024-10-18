@@ -20,7 +20,7 @@ function annoying(event){
 
 <template>
     <nav
-      class="navbar navbar-expand-sm navbar-dark bg-dark"
+      class="navbar navbar-expand-sm navbar-dark bg-dark ml-auto"
     >
       <div class="container-lg">
         <img src="../assets/Annoying_Dog_sprite.gif" @click="annoying($event)" class="img-fluid dog" alt="Yi" >

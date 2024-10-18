@@ -164,6 +164,7 @@
 <style scoped>
   #self-intro{
     min-height: 100vh;
+    width: inherit;
     background-color: #F3F3F3;
   }
   #timeline{

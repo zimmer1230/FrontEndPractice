@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import PortfolioView from '../views/PortfolioView.vue'
+import ContactView from '../views/ContactView.vue'
 
 
 const router = createRouter({
